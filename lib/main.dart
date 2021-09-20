@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fortis_haiku_mobile/widgets/haiku_cards.dart';
+import 'package:fortis_haiku_mobile/widgets/models/haiku.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,6 +37,27 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final List<Haiku> haikus = [
+    Haiku(
+        id: "qeq3213e1q",
+        author: "philip",
+        haiku:
+            "Autumn moonlight- \na worm digs silently \n into the chestnut."),
+    Haiku(
+        id: "qeq3213e1q",
+        author: "Neil",
+        haiku:
+            "Autumn moonlight- \na worm digs silently \n into the chestnut."),
+    Haiku(
+        id: "qeq3213e1q",
+        author: "philip",
+        haiku:
+            "Autumn moonlight- \na worm digs silently \n into the chestnut."),
+    Haiku(
+        id: "qeq3213e1q",
+        author: "dustine",
+        haiku: "Autumn moonlight- \na worm digs silently \n into the chestnut.")
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,13 +65,10 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            HaikuCard(),
-            HaikuCard(),
-            HaikuCard(),
-            HaikuCard(),
-            HaikuCard(),
-            HaikuCard(),
-            HaikuCard()
+            ...haikus.map((haiku) => HaikuCard(
+                  haiku: haiku.haiku,
+                  author: haiku.author,
+                )),
           ],
         ),
       ),
