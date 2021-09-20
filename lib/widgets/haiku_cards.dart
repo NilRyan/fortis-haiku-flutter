@@ -9,6 +9,7 @@ class HaikuCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      margin: EdgeInsets.all(10),
       elevation: 2,
       child: ListTile(
         leading: Column(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fortis_haiku_mobile/widgets/haiku_cards.dart';
 import 'package:fortis_haiku_mobile/widgets/models/haiku.dart';
+import 'package:fortis_haiku_mobile/widgets/new_haiku.dart';
 
 void main() {
   runApp(const MyApp());
@@ -58,6 +59,21 @@ class _MyHomePageState extends State<MyHomePage> {
         author: "dustine",
         haiku: "Autumn moonlight- \na worm digs silently \n into the chestnut.")
   ];
+  void _addHaiku(String haiku, String author) {
+    setState(() {
+      haikus.add(Haiku(id: "242", author: author, haiku: haiku));
+    });
+  }
+
+  void showAddHaikuModal(BuildContext context) {
+    showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        builder: (bCtx) {
+          return NewHaiku(addHaiku: _addHaiku);
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,6 +87,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 )),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showAddHaikuModal(context);
+        },
+        child: Icon(Icons.add),
       ),
     );
   }
