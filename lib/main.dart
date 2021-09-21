@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fortis_haiku_mobile/widgets/haiku_cards.dart';
+import 'package:fortis_haiku_mobile/widgets/haiku_list.dart';
 import 'package:fortis_haiku_mobile/widgets/models/haiku.dart';
 import 'package:fortis_haiku_mobile/widgets/new_haiku.dart';
 
@@ -46,9 +47,8 @@ class _MyHomePageState extends State<MyHomePage> {
             "Autumn moonlight- \na worm digs silently \n into the chestnut."),
     Haiku(
         id: "qeq3213e1q",
-        author: "Neil",
-        haiku:
-            "Autumn moonlight- \na worm digs silently \n into the chestnut."),
+        author: "Nil",
+        haiku: "MASTER CEO\n Pinakaboss ng lahat \n at ang POGI PA!"),
     Haiku(
         id: "qeq3213e1q",
         author: "philip",
@@ -57,7 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Haiku(
         id: "qeq3213e1q",
         author: "dustine",
-        haiku: "Autumn moonlight- \na worm digs silently \n into the chestnut.")
+        haiku: "MASTER CEO\n Pinakaboss ng lahat \n at ang POGI PA!")
   ];
   void _addHaiku(String haiku, String author) {
     setState(() {
@@ -79,13 +79,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       body: Center(
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ...haikus.map((haiku) => HaikuCard(
-                  haiku: haiku.haiku,
-                  author: haiku.author,
-                )),
-          ],
+          children: <Widget>[HaikuList(haikus: haikus)],
         ),
       ),
       floatingActionButton: FloatingActionButton(
