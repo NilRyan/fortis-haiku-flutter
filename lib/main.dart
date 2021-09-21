@@ -1,11 +1,30 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fortis_haiku_mobile/widgets/haiku_cards.dart';
 import 'package:fortis_haiku_mobile/widgets/haiku_list.dart';
 import 'package:fortis_haiku_mobile/widgets/models/haiku.dart';
 import 'package:fortis_haiku_mobile/widgets/new_haiku.dart';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(const MyApp());
+}
+
+// A function that converts a response body into a List<Photo>.
+List<Haiku> parseHaiku(String responseBody) {
+  final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
+
+  return parsed.map<Haiku>((json) => Haiku.fromJson(json)).toList();
+}
+
+Future<List<Haiku>> fetchHaikus(http.Client client) async {
+  final response = await client
+      .get(Uri.parse('https://fortis-haiku-backend.herokuapp.com/haiku'));
+
+  // Use the compute function to run parsePhotos in a separate isolate.
+  return compute(parseHaiku, response.body);
 }
 
 class MyApp extends StatelessWidget {
@@ -78,10 +97,25 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[HaikuList(haikus: haikus)],
+        child: FutureBuilder<List<Haiku>>(
+          future: fetchHaikus(http.Client()),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return const Center(
+                child: Text("Error"),
+              );
+            } else if (snapshot.hasData) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[HaikuList(haikus: snapshot.data!)],
+              );
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          },
         ),
       ),
       floatingActionButton: FloatingActionButton(
