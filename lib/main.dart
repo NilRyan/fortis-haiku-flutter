@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:fortis_haiku_mobile/widgets/haiku_cards.dart';
 import 'package:fortis_haiku_mobile/widgets/haiku_list.dart';
 import 'package:fortis_haiku_mobile/widgets/models/haiku.dart';
 import 'package:fortis_haiku_mobile/widgets/new_haiku.dart';
@@ -27,6 +26,22 @@ Future<List<Haiku>> fetchHaikus(http.Client client) async {
   return compute(parseHaiku, response.body);
 }
 
+Future<Haiku> createHaiku(String author, String haiku) async {
+  final response = await http.post(
+    Uri.parse('https://fortis-haiku-backend.herokuapp.com/haiku'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{'author': author, 'haiku': haiku}),
+  );
+
+  if (response.statusCode == 201) {
+    return Haiku.fromJson(jsonDecode(response.body));
+  } else {
+    throw Exception('Failed to create album.');
+  }
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -45,7 +60,7 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.green,
+        primarySwatch: Colors.lightBlue,
       ),
       home: MyHomePage(),
     );
@@ -58,29 +73,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<Haiku> haikus = [
-    Haiku(
-        id: "qeq3213e1q",
-        author: "philip",
-        haiku:
-            "Autumn moonlight- \na worm digs silently \n into the chestnut."),
-    Haiku(
-        id: "qeq3213e1q",
-        author: "Nil",
-        haiku: "MASTER CEO\n Pinakaboss ng lahat \n at ang POGI PA!"),
-    Haiku(
-        id: "qeq3213e1q",
-        author: "philip",
-        haiku:
-            "Autumn moonlight- \na worm digs silently \n into the chestnut."),
-    Haiku(
-        id: "qeq3213e1q",
-        author: "dustine",
-        haiku: "MASTER CEO\n Pinakaboss ng lahat \n at ang POGI PA!")
-  ];
+  late Future<List<Haiku>> initialState;
+
   void _addHaiku(String haiku, String author) {
-    setState(() {
-      haikus.add(Haiku(id: "242", author: author, haiku: haiku));
+    setState(() async {
+      await createHaiku(author, haiku);
     });
   }
 
@@ -94,11 +91,18 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    initialState = fetchHaikus(http.Client());
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Center(
         child: FutureBuilder<List<Haiku>>(
-          future: fetchHaikus(http.Client()),
+          future: initialState,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return const Center(
@@ -106,10 +110,9 @@ class _MyHomePageState extends State<MyHomePage> {
               );
             } else if (snapshot.hasData) {
               return Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[HaikuList(haikus: snapshot.data!)],
-              );
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[HaikuList(haikus: snapshot.data!)]);
             } else {
               return const Center(
                 child: CircularProgressIndicator(),
@@ -121,6 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showAddHaikuModal(context);
+          print(context);
         },
         child: Icon(Icons.add),
       ),

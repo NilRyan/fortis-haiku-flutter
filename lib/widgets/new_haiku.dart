@@ -36,6 +36,7 @@ class _NewHaikuState extends State<NewHaiku> {
           TextButton(
               onPressed: () {
                 widget.addHaiku(_haikuController.text, _authorController.text);
+
                 Navigator.of(context).pop();
               },
               child: Text("Submit Haiku!"))
